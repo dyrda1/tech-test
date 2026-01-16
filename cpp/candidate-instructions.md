@@ -20,7 +20,7 @@ This test should take about 2 hours to complete and you should try and limit you
 
 You may use any resources you wish to complete the test. You may use the internet, books, or any other resources you have available including AI tools. You should not ask for help from any other person. **You will be asked to explain your solution and justify your decisions.**
 
-You should not use any third party libraries or introduce any new dependencies in order to complete the test. You may use any functionality provided by the C++ standard library (C++17 or later). The default CMake configuration uses C++17, but you may change `CMAKE_CXX_STANDARD` in CMakeLists.txt to 20 or 23 if you prefer.
+You should not use any third party libraries or introduce any new dependencies in order to complete the test. You may use any functionality provided by the C++ standard library (C++17 or later). The default CMake configuration uses C++17, but you may change `CMAKE_CXX_STANDARD` in CMakeLists.txt to 20 or 23 if you prefer. The on exception to this is Exercise 3 where you may introduce an XML parsing library if desired.
 
 Start by forking this repository to your own GitHub account. You should commit your code after each exercise at a minimum. Once you have completed the test, please send the URL of your repository to your interviewer.
 
