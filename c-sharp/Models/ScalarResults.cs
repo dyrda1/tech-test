@@ -14,16 +14,17 @@ namespace HmxLabs.TechTest.Models
                     return null;
                 }
 
-                    double? priceResult = null;
-                    string? error = null;
-                    if (_results.ContainsKey(tradeId_))
-                    {
-                        priceResult = _results[tradeId_];
-                    }
-                    if (_errors.ContainsKey(tradeId_))
-                    {
-                        error = _errors[tradeId_];
-                    }
+                double? priceResult = null;
+                string? error = null;
+                if (_results.ContainsKey(tradeId_))
+                {
+                    priceResult = _results[tradeId_];
+                }
+
+                if (_errors.ContainsKey(tradeId_))
+                {
+                    error = _errors[tradeId_];
+                }
 
                 return new ScalarResult(tradeId_, priceResult, error);
             }
@@ -51,12 +52,20 @@ namespace HmxLabs.TechTest.Models
 
         public IEnumerator<ScalarResult> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            var tradeIds = new HashSet<string>(_results.Keys);
+            tradeIds.UnionWith(_errors.Keys);
+
+            foreach (var tradeId in tradeIds)
+            {
+                var item = this[tradeId];
+                if (item != null)
+                    yield return item;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return GetEnumerator();
         }
 
         private readonly Dictionary<string, double> _results = new Dictionary<string, double>();
