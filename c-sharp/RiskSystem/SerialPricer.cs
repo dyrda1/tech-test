@@ -7,23 +7,20 @@ namespace HmxLabs.TechTest.RiskSystem
 {
     public class SerialPricer
     {
-        public void Price(IEnumerable<IEnumerable<ITrade>> tradeContainers_, IScalarResultReceiver resultReceiver_)
+        public void Price(IEnumerable<ITrade> trades_, IScalarResultReceiver resultReceiver_)
         {
             LoadPricers();
 
-            foreach (var tradeContainer in tradeContainers_)
+            foreach (var trade in trades_)
             {
-                foreach (var trade in tradeContainer)
+                if (!_pricers.ContainsKey(trade.TradeType))
                 {
-                    if (!_pricers.ContainsKey(trade.TradeType))
-                    {
-                        resultReceiver_.AddError(trade.TradeId, "No Pricing Engines available for this trade type");
-                        continue;
-                    }
-
-                    var pricer = _pricers[trade.TradeType];
-                    pricer.Price(trade, resultReceiver_);
+                    resultReceiver_.AddError(trade.TradeId, "No Pricing Engines available for this trade type");
+                    continue;
                 }
+
+                var pricer = _pricers[trade.TradeType];
+                pricer.Price(trade, resultReceiver_);
             }
         }
 

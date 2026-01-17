@@ -5,22 +5,28 @@ namespace HmxLabs.TechTest.RiskSystem
 {
     public class SerialTradeLoader
     {
-        public IEnumerable<IEnumerable<ITrade>> LoadTrades()
+        public IEnumerable<ITrade> LoadTrades()
         {
             var loaders = GetTradeLoaders();
 
-            return loaders.Select(loader => loader.LoadTrades()).ToList();
+            foreach (var loader in loaders)
+            {
+                foreach (var trade in loader.LoadTrades())
+                {
+                    yield return trade;
+                }
+            }
         }
 
         private IEnumerable<ITradeLoader> GetTradeLoaders()
         {
             var loaders = new List<ITradeLoader>();
-            ITradeLoader loader = new BondTradeLoader {DataFile = @"TradeData/BondTrades.dat"};
+            ITradeLoader loader = new BondTradeLoader { DataFile = @"TradeData/BondTrades.dat" };
             loaders.Add(loader);
 
             loader = new FxTradeLoader { DataFile = @"TradeData/FxTrades.dat" };
             loaders.Add(loader);
-            
+
             return loaders;
         }
     }

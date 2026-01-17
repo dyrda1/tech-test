@@ -8,18 +8,14 @@ namespace HmxLabs.TechTest.Loaders
 
         public IEnumerable<ITrade> LoadTrades()
         {
-            var tradeList = new BondTradeList();
-            LoadTradesFromFile(DataFile, tradeList);
-
-            return tradeList;
+            return LoadTradesFromFile(DataFile);
         }
 
         public string? DataFile { get; set; }
 
         private BondTrade CreateTradeFromLine(string line_)
         {
-            
-            var items = line_.Split(new[] {Seperator});
+            var items = line_.Split(new[] { Seperator });
             var trade = new BondTrade(items[6], items[0]);
             trade.TradeDate = DateTime.Parse(items[1]);
             trade.Instrument = items[2];
@@ -30,28 +26,25 @@ namespace HmxLabs.TechTest.Loaders
             return trade;
         }
 
-        private void LoadTradesFromFile(string? filename_, BondTradeList tradeList_)
+        private IEnumerable<ITrade> LoadTradesFromFile(string filename_)
         {
             if (null == filename_)
                 throw new ArgumentNullException(nameof(filename_));
-            
-            var stream = new StreamReader(filename_);
 
-            using (stream)
+            using var stream = new StreamReader(filename_);
+
+            var lineCount = 0;
+            while (!stream.EndOfStream)
             {
-                var lineCount = 0;
-                while (!stream.EndOfStream)
+                var line = stream.ReadLine();
+                if (lineCount == 0)
                 {
-                    if (0 == lineCount)
-                    {
-                        stream.ReadLine();
-                    }
-                    else
-                    {
-                        tradeList_.Add(CreateTradeFromLine(stream.ReadLine()!));    
-                    }
                     lineCount++;
+                    continue;
                 }
+
+                yield return CreateTradeFromLine(line);
+                lineCount++;
             }
         }
     }
