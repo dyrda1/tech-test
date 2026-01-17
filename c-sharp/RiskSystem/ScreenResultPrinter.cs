@@ -8,12 +8,21 @@ namespace HmxLabs.TechTest.RiskSystem
         {
             foreach (var result in results_)
             {
-                // Write code here to print out the results such that we have : 
-                // TradeID : Result : Error
-                // If there is no result then the output should be :
-                // TradeID : Error
-                // If there is no error the output should be :
-                // TradeID : Result
+                var hasResult = result.Result.HasValue;
+                var hasError = !string.IsNullOrWhiteSpace(result.Error);
+
+                if (hasResult && hasError)
+                {
+                    Console.WriteLine($"{result.TradeId} : {result.Result} : {result.Error}");
+                }
+                else if (hasResult)
+                {
+                    Console.WriteLine($"{result.TradeId} : {result.Result}");
+                }
+                else if (hasError)
+                {
+                    Console.WriteLine($"{result.TradeId} : {result.Error}");
+                }
             }
         }
     }
