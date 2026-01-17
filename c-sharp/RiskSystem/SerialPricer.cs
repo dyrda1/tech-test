@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using HmxLabs.TechTest.Models;
 
 namespace HmxLabs.TechTest.RiskSystem
 {
     public class SerialPricer
     {
-        public void Price(IEnumerable<IEnumerable<ITrade>> tradeContainters_, IScalarResultReceiver resultReceiver_)
+        public void Price(IEnumerable<IEnumerable<ITrade>> tradeContainers_, IScalarResultReceiver resultReceiver_)
         {
             LoadPricers();
 
-            foreach (var tradeContainter in tradeContainters_)
+            foreach (var tradeContainer in tradeContainers_)
             {
-                foreach (var trade in tradeContainter)
+                foreach (var trade in tradeContainer)
                 {
                     if (!_pricers.ContainsKey(trade.TradeType))
                     {
@@ -33,7 +34,27 @@ namespace HmxLabs.TechTest.RiskSystem
 
             foreach (var configItem in pricerConfig)
             {
-                throw new NotImplementedException();
+                if (string.IsNullOrWhiteSpace(configItem.TradeType))
+                    throw new InvalidOperationException("Pricing config item missing TradeType");
+
+                if (string.IsNullOrWhiteSpace(configItem.Assembly))
+                    throw new InvalidOperationException($"Pricing config item for {configItem.TradeType} missing Assembly");
+
+                if (string.IsNullOrWhiteSpace(configItem.TypeName))
+                    throw new InvalidOperationException($"Pricing config item for {configItem.TradeType} missing TypeName");
+
+                var asm = Assembly.Load(configItem.Assembly);
+
+                var pricerType = asm.GetType(configItem.TypeName, throwOnError: true);
+
+                var instance = Activator.CreateInstance(pricerType!);
+                if (instance is null)
+                    throw new InvalidOperationException($"Failed to create instance of {configItem.TypeName}");
+
+                if (instance is not IPricingEngine pricer)
+                    throw new InvalidCastException($"{configItem.TypeName} does not implement IPricingEngine");
+
+                _pricers[configItem.TradeType] = pricer;
             }
         }
 
