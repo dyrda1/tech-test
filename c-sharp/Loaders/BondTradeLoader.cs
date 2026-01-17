@@ -20,7 +20,7 @@ namespace HmxLabs.TechTest.Loaders
         {
             
             var items = line_.Split(new[] {Seperator});
-            var trade = new BondTrade(items[6]);
+            var trade = new BondTrade(items[6], items[0]);
             trade.TradeDate = DateTime.Parse(items[1]);
             trade.Instrument = items[2];
             trade.Counterparty = items[3];
