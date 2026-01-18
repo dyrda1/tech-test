@@ -26,7 +26,8 @@ namespace HmxLabs.TechTest.RiskSystem
 
         private void LoadPricers()
         {
-            var pricingConfigLoader = new PricingConfigLoader { ConfigFile = @".\PricingConfig\PricingEngines.xml" };
+            var configPath = Path.Combine("PricingConfig", "PricingEngines.xml");
+            var pricingConfigLoader = new PricingConfigLoader { ConfigFile = configPath };
             var pricerConfig = pricingConfigLoader.LoadConfig();
 
             foreach (var configItem in pricerConfig)
@@ -40,10 +41,10 @@ namespace HmxLabs.TechTest.RiskSystem
                 if (string.IsNullOrWhiteSpace(configItem.TypeName))
                     throw new InvalidOperationException($"Pricing config item for {configItem.TradeType} missing TypeName");
 
-                var asm = Assembly.Load(configItem.Assembly);
-
+                var path = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "Pricers",
+                    "bin", "Debug", "net8.0", "Pricers.dll"));
+                var asm = Assembly.LoadFrom(path);
                 var pricerType = asm.GetType(configItem.TypeName, throwOnError: true);
-
                 var instance = Activator.CreateInstance(pricerType!);
                 if (instance is null)
                     throw new InvalidOperationException($"Failed to create instance of {configItem.TypeName}");
